@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>勤務予定管理 - 画面モック</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar__row">
+        <div class="brand">
+          <div class="brand__title">勤務予定管理</div>
+          <div class="brand__subtitle">画面モック（静的HTML）</div>
+        </div>
+        <nav class="nav">
+          <a class="nav__link" href="./members.html">メンバー一覧</a>
+          <a class="nav__link" href="./schedules.html">予定一覧</a>
+          <a class="nav__link" href="./schedule-form.html">予定登録</a>
+          <a class="nav__link" href="./monthly.html">月次集計</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h1 class="h1">このモックでできること</h1>
+        <ul class="list">
+          <li>画面遷移のイメージ確認（リンク移動）</li>
+          <li>一覧の見た目、入力フォームの雰囲気確認</li>
+          <li>検索条件UI（date / user / from-to）の動き（簡易）</li>
+        </ul>
+        <p class="muted">
+          ※ APIやDBとは接続しません。画面検討・実習用の叩き台です。
+        </p>
+      </section>
+
+      <section class="grid">
+        <a class="tile" href="./members.html">
+          <div class="tile__title">メンバー一覧</div>
+          <div class="tile__desc">メンバーとチームの一覧</div>
+        </a>
+        <a class="tile" href="./schedules.html">
+          <div class="tile__title">予定一覧</div>
+          <div class="tile__desc">日付/メンバー/期間で絞り込み</div>
+        </a>
+        <a class="tile" href="./schedule-form.html">
+          <div class="tile__title">予定登録/編集</div>
+          <div class="tile__desc">必須チェックと時刻の妥当性</div>
+        </a>
+        <a class="tile" href="./monthly.html">
+          <div class="tile__title">月次集計</div>
+          <div class="tile__desc">年月/チームで表示（ダミー）</div>
+        </a>
+      </section>
+
+      <section class="card">
+        <h2 class="h2">使い方</h2>
+        <ol class="list">
+          <li><code>mock/index.html</code> をブラウザで開く</li>
+          <li>上部ナビから各画面へ移動</li>
+          <li>（任意）クエリで初期値を渡す：<code>schedules.html?date=2026-03-11</code></li>
+        </ol>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__row">
+        <span class="muted">教育用実習課題 / UI mock</span>
+        <a class="link" href="../概要.md">概要.md</a>
+      </div>
+    </footer>
+  </body>
+</html>
+

@@ -1,0 +1,8 @@
+services:
+  ui-mock:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./mock:/usr/share/nginx/html:ro
+

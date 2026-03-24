@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>予定一覧 - 画面モック</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar__row">
+        <div class="brand">
+          <div class="brand__title">予定一覧</div>
+          <div class="brand__subtitle">勤務予定管理 / UI mock</div>
+        </div>
+        <nav class="nav">
+          <a class="nav__link" href="./index.html">ホーム</a>
+          <a class="nav__link" href="./members.html">メンバー一覧</a>
+          <a class="nav__link" href="./schedule-form.html">予定登録</a>
+          <a class="nav__link" href="./monthly.html">月次集計</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <div class="toolbar">
+          <div class="field">
+            <label for="date">日付（date）</label>
+            <input id="date" type="date" />
+          </div>
+          <div class="field">
+            <label for="from">期間（from）</label>
+            <input id="from" type="date" />
+          </div>
+          <div class="field">
+            <label for="to">期間（to）</label>
+            <input id="to" type="date" />
+          </div>
+          <div class="field">
+            <label for="userId">メンバー（userId）</label>
+            <select id="userId"></select>
+          </div>
+          <button class="btn btn--primary" id="search">検索</button>
+          <button class="btn" id="reset">リセット</button>
+          <a class="btn" href="./schedule-form.html">新規登録</a>
+        </div>
+        <p class="muted" style="margin: 10px 0 0">
+          ルール: <code>date</code> と <code>from/to</code> は同時指定不可、<code>from</code> と
+          <code>to</code> はセットで指定。
+        </p>
+      </section>
+
+      <section class="card">
+        <div class="alert" data-alert></div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>日付</th>
+              <th>名前</th>
+              <th>勤務区分</th>
+              <th>開始</th>
+              <th>終了</th>
+              <th>コメント</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__row">
+        <span class="muted">mock/schedules.html</span>
+        <a class="link" href="./index.html">ホーム</a>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { schedules, users, userById, statusById, formatTimeShort } from "./mock-data.js";
+      import { fillSelect, qs, readQuery, renderTable, setAlert } from "./ui.js";
+
+      const date = qs("#date");
+      const from = qs("#from");
+      const to = qs("#to");
+      const userId = qs("#userId");
+      const search = qs("#search");
+      const reset = qs("#reset");
+      const tbody = qs("#tbody");
+
+      fillSelect(userId, users, {
+        valueKey: "id",
+        labelKey: "name",
+        includeEmpty: "全メンバー",
+      });
+
+      const query = readQuery();
+      if (query.date) date.value = query.date;
+      if (query.from) from.value = query.from;
+      if (query.to) to.value = query.to;
+      if (query.userId) userId.value = query.userId;
+
+      function validate() {
+        const hasDate = Boolean(date.value);
+        const hasRange = Boolean(from.value || to.value);
+        if (hasDate && hasRange) return "date と from/to は同時に指定できません。";
+        if ((from.value && !to.value) || (!from.value && to.value))
+          return "from と to はセットで指定してください。";
+        if (from.value && to.value && from.value > to.value) return "from <= to になるよう指定してください。";
+        return "";
+      }
+
+      function filtered() {
+        const uid = userId.value ? Number(userId.value) : null;
+        const hasDate = Boolean(date.value);
+        const hasRange = Boolean(from.value && to.value);
+        return schedules.filter((s) => {
+          if (uid && s.userId !== uid) return false;
+          if (hasDate && s.targetDate !== date.value) return false;
+          if (hasRange && (s.targetDate < from.value || s.targetDate > to.value)) return false;
+          return true;
+        });
+      }
+
+      function render() {
+        const message = validate();
+        setAlert(message);
+        if (message) {
+          tbody.innerHTML = "";
+          return;
+        }
+
+        const rows = filtered();
+        if (rows.length === 0) setAlert("該当する予定がありません。");
+
+        renderTable(
+          tbody,
+          rows
+            .map((s) => {
+              const user = userById(s.userId);
+              const status = statusById(s.statusTypeId);
+              return `
+                <tr>
+                  <td><code>${s.targetDate}</code></td>
+                  <td>${user ? user.name : "-"}</td>
+                  <td>${status ? status.statusName : "-"}</td>
+                  <td>${formatTimeShort(s.startTime)}</td>
+                  <td>${formatTimeShort(s.endTime)}</td>
+                  <td>${s.comment ?? ""}</td>
+                  <td class="actions">
+                    <a class="link" href="./schedule-form.html?editId=${s.id}">編集</a>
+                    <button class="btn btn--danger" data-delete="${s.id}">削除</button>
+                  </td>
+                </tr>
+              `;
+            })
+            .join("")
+        );
+      }
+
+      search.addEventListener("click", render);
+      reset.addEventListener("click", () => {
+        date.value = "";
+        from.value = "";
+        to.value = "";
+        userId.value = "";
+        render();
+      });
+
+      tbody.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-delete]");
+        if (!button) return;
+        const id = button.getAttribute("data-delete");
+        const ok = window.confirm(`予定ID=${id} を削除しますか？（モックなので実際には消えません）`);
+        if (!ok) return;
+        setAlert("削除API呼び出し（モック）: 204 No Content");
+      });
+
+      render();
+    </script>
+  </body>
+</html>
+
