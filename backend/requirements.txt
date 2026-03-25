@@ -1,0 +1,5 @@
+#必要なフレームワーク/ライブラリはこちらに記入する
+Flask
+psycopg[binary] == 3.2.3
+pydantic == 2.10.2
+pydantic-settings == 2.6.1
