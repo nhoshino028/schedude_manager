@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: /frontend/Dockerfile
+    container_name: vite-container
+    ports:
+      - 5173:5173
+    volumes:
+      - ./app/:/var/www/html/app
+    environment:
+      - WATCHPACK_POLLING=true
+    tty: true
