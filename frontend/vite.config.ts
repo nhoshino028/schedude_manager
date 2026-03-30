@@ -1,12 +1,15 @@
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
-
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-
-//追加コード
+  // ホットリロードを確実に動かすための設定追加
   server: {
-    host: true, // true に設定すると、LAN やパブリックアドレスを含むすべてのアドレスをリッスン
-    port: 5173, // 開発サーバーが使用するポート番号
+    host: true,
+    port: 5173,
+    watch: {
+      usePolling: true,
+    },
   },
-});
+})
