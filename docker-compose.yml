@@ -3,7 +3,7 @@ services:
     container_name: schedule_frontend
     build: ./frontend
     ports:
-      - 5173:5173
+      - 8000:8000
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -16,7 +16,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - 8000:8000
+      - 5173:5173
     container_name: schedule_backend
 
   postgres:
