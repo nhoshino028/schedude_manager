@@ -2,5 +2,5 @@
     "name": "frontend",
     "dockerComposeFile": "../docker-compose.yml",
     "service": "frontend",
-    "workspaceFolder": "/workspace/frontend"
+    "workspaceFolder": "/workspaces/practice/frontend"
 }
