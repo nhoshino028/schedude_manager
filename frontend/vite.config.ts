@@ -7,7 +7,7 @@ export default defineConfig({
   // ホットリロードを確実に動かすための設定追加
   server: {
     host: true,
-    port: 5173,
+    port: 8000,
     watch: {
       usePolling: true,
     },

@@ -1,6 +1,0 @@
-{
-    "name": "frontend",
-    "dockerComposeFile": "../docker-compose.yml",
-    "service": "frontend",
-    "workspaceFolder": "/workspaces/practice/frontend"
-}
