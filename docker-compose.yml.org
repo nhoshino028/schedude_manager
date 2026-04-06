@@ -3,29 +3,25 @@ services:
     container_name: schedule_frontend
     build: ./frontend
     ports:
-      - 5173:5173
+      - 8000:8000
     volumes:
       - .:/workspace
-      - /workspace/frontend/node_modules
+      - /app/node/node_modules
     environment:
       #ホットリロードの有効化
       - CHOKIDAR_USEPOLLING=true
       #ホットリロードが上手くいかないときに有効にすると一定時間にファイルの確認をしてくれる
       #- WATCHPACK_POLLING=true
-    #working_dirのパスをサービスごとに統一
     working_dir: /workspace/frontend
-    command: npm run dev -- --host 0.0.0.0
 
   backend:
-    container_name: schedule_backend
     build: ./backend
     ports:
-      - 8000:8000
+      - 5173:5173
     volumes:
       - .:/workspace
-    #working_dirのパスをサービスごとに統一
-    working_dir: /workspace/backend
-    command: python app/app.py
+    container_name: schedule_backend
+    working_dir: /workspace/backend/app
 
   postgres:
     container_name: postgres
