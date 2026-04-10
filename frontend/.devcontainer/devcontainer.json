@@ -9,7 +9,6 @@
 	"workspaceFolder": "/workspace/frontend",
 	"runServices": [
 		"frontend"
-	],
-	"forwardPorts": [],
-	"postCreateCommand": "npm run dev"
+	]
+	// "postCreateCommand": "npm run dev"
 }
