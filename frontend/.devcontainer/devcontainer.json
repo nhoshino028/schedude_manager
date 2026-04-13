@@ -5,10 +5,13 @@
 	"dockerComposeFile": [
 		"../../docker-compose.yml"
 	],
+	// serviceはdevcontainerを起動する際にアタッチするサービスを指定する。今回はフロントエンドのコンテナにアタッチするため、frontendを指定する
 	"service": "frontend",
 	"workspaceFolder": "/workspace/frontend",
+	// runServicesはdevcontainerを起動する際に同時に起動する他サービスを指定する。今回はフロントエンドとバックエンドのコンテナを起動するため、frontendとbackendを指定する
 	"runServices": [
-		"frontend"
+		"backend",
+		"postgres"
 	]
 	// "postCreateCommand": "npm run dev"
 }
