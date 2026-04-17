@@ -1,3 +1,4 @@
+--テーブル作成
 CREATE TABLE teams (
     id bigserial not null PRIMARY KEY,
     team_code varchar(50) not null,
@@ -52,6 +53,7 @@ CREATE TABLE monthly_schedule_summary (
     unique(user_id, year_month)
 );
 
+--インデックス作成
 CREATE INDEX idx_teams_team_code ON teams (team_code);
 
 CREATE INDEX idx_users_team_id ON users (team_id);
