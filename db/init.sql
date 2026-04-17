@@ -1,4 +1,3 @@
---テーブルの作成
 CREATE TABLE teams (
     id bigserial not null PRIMARY KEY,
     team_code varchar(50) not null,
@@ -53,7 +52,6 @@ CREATE TABLE monthly_schedule_summary (
     unique(user_id, year_month)
 );
 
---indexの作成
 CREATE INDEX idx_teams_team_code ON teams (team_code);
 
 CREATE INDEX idx_users_team_id ON users (team_id);
@@ -64,19 +62,3 @@ CREATE INDEX idx_schedules_user_id ON schedules (user_id);
 CREATE INDEX idx_schedules_user_date ON schedules (user_id, target_date);
 
 CREATE INDEX idx_monthly_summary_year_month ON monthly_schedule_summary (year_month);
-
---サンプルデータの作成
---SELECT文
-SELECT users.id, employee_code, users.name, team_id, team_code, teams.name FROM users
-INNER JOIN teams
-ON users.team_id = teams.id;
---INSERT文
-INSERT INTO schedules (id, user_id, target_date, status_type_id, start_time, end_time, comment, created_at, updated_at)
-VALUES
-    ('5', '006', '2026-04-16', '06', null, null, '体調不良', '2026-04-16 08:30:00', '2026-04-16 08:30:00');
---UPDATE文
-UPDATE monthly_schedule_summary SET absence_days = absence_days +1
-WHERE user_id = 5;
---DELETE文
-DELETE FROM schedules
-WHERE user_id = '2';
