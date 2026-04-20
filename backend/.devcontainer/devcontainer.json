@@ -8,5 +8,5 @@
     "runServices": [
 		"backend"
 	],
-	"postCreateCommand": "python app/app.py"
+	"postCreateCommand": "python app/__init__.py"
 }
