@@ -1,7 +1,8 @@
 #pythonパッケージの初期化を行うときに利用される
 
-from flask import Flask
-from pydantic_settings import BaseSettings
+from flask import Flask, jsonify, request
+from database import pool
+from psycopg.rows import dict_row
 
 class Settings(BaseSettings):
     app_name: str = "My Flask App"
@@ -19,6 +20,12 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     return f"Welcome to {settings.app_name}!"
+
+
+@app.route('/teams', methods=['GET'])
+def get_teams():
+
+
 
 if __name__ == "__main__":
     # host="0.0.0.0" がないとコンテナの外からアクセスできません

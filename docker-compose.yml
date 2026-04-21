@@ -47,5 +47,14 @@ services:
       POSTGRES_DB: "schedule_manager"
     # (※ 厳密にはhealthcheckを指定して、コンテナの起動後にDBが利用可能になるまで待機する必要があるが、今回は簡略化のために省略する)
 
+
+  web:
+    build: .
+    env_file:
+     - .env
+    depends_on:
+      - postgres
+
+
 volumes:
   postgres_data:
