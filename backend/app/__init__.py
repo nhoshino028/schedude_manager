@@ -106,7 +106,7 @@ def edit_schedules():
         return f"更新が成功しました。"
     
     #削除
-    elif request.method == 'DELETE':
+    else:
          with psycopg.connect(settings.DATABASE_URL) as conn:
             with conn.cursor(row_factory=dict_row) as cur:
                 cur.execute(
