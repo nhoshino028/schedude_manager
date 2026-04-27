@@ -1,0 +1,28 @@
+# --- 環境変数（秘匿情報を含むためコミット禁止） -----
+.env
+# Vite 規約のローカル環境変数ファイル。.env.example から個人の上書きを作る
+# ときに使われ、秘密値が入り得るため .env 同様にコミット禁止とする。
+.env.local
+.env.*.local
+
+# --- Python ---------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# --- Node.js --------------------------------------
+node_modules/
+frontend/node_modules/
+dist/
+.vite/
+
+# --- エディタ系 ------------------------------------
+.vscode/*
+!.vscode/settings.json
+.idea/
+*.swp
+
+# --- OS 自動生成 -----------------------------------
+.DS_Store
+Thumbs.db

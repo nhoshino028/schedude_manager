@@ -1,5 +1,6 @@
 services:
   frontend:
+    image: schedule-frontend # イメージ名も指定
     container_name: schedule_frontend
     build: ./frontend
     ports:
@@ -20,15 +21,18 @@ services:
       - backend
 
   backend:
+    image: schedul-backend  # イメージ名も指定
     container_name: schedule_backend
-    build: ./backend
+    build:
+      context: ./backend          # Dockerfile とビルドコンテキストの起点
+      dockerfile: Dockerfile
     ports:
       - 8000:8000
     volumes:
-      - .:/workspace
-    #working_dirのパスをサービスごとに統一
-    working_dir: /workspace/backend
-    command: python app/app.py
+      # ホスト側のソースコードをバインドマウント。ホットリロード用。
+      - ./backend:/app
+    # Dockerfile の CMD を上書き。--debug で自動リロードと詳細エラー有効。
+    command: flask --app "app:create_app" run --host 0.0.0.0 --port 8000 --debug
     #バックエンドはpostgresに依存しているため、postgresを先に起動する（※（※厳密な制御ではconditionでhealthyを指定しDBの起動完了を確認するが、今回は簡略化のためにdepends_onのみで制御する）
     depends_on:
       - postgres

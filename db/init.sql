@@ -101,7 +101,7 @@ VALUES
 INSERT INTO work_status_types (id, status_code, status_name)
 VALUES
     ('01', 'OFFICE', '出社'),
-    ('02', 'REMOTE', 'リモート'),
+    ('02', 'REMOTE', '在宅'),
     ('03', 'PAID_LEAVE', '休暇'),
     ('04', 'AM_LEAVE', '午前休暇'),
     ('05', 'PM_LEAVE', '午後休暇'),
