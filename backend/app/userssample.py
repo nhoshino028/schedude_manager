@@ -1,14 +1,13 @@
-from flask import Flask, Blueprint, jsonify
+from flask import Flask, jsonify, Blueprint
 import psycopg
 from psycopg.rows import dict_row #辞書型で返してくれるようインポート
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from app import get_connection
 
 app = Flask(__name__)
 
-@app.route('/teamssample', methods=['GET'])
-def get_teams():
-    query = """ SELECT * FROM teams """
+@app.route('/userssample', methods=['GET'])
+def get_users():
+    query = """ SELECT * FROM users """
 
     with get_connection() as conn:
         with conn.cursor() as cur:
@@ -18,7 +17,7 @@ def get_teams():
         result = []
         for row in rows:
             record = {
-                "id": row['id'], "teamCode": row['team_code'],"name": row['name']
+                "id": row['id'], "employeeCode": row['employee_code'] ,"name": row['name'], "team": row['team_id'], "createdAt": row['created_at']
             }
             result.append(record)
 

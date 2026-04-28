@@ -1,7 +1,6 @@
-from flask import Flask, Blueprint, jsonify
+from flask import Flask, jsonify, Blueprint
 import psycopg
 from psycopg.rows import dict_row #辞書型で返してくれるようインポート
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from app import get_connection
 
 app = Flask(__name__)

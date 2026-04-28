@@ -6,7 +6,7 @@ delete_app = Blueprint('/schedules/{id}', __name__, url_prefix='/schedules/{id}'
 
 @delete_app.route('/schedules/{id}', methods=['DELETE'])
 def delete_schedule():
-    with spycopg.connect(settings.DATABASE_URL) as conn:
+    with psycopg.connect(settings.DATABASE_URL) as conn:
         with conn.cursor(row_factory=dict_row) as cur:
                 cur.execute(
                     "DELETE FROM schedules"
