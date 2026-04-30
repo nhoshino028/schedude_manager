@@ -7,7 +7,7 @@ from app.schemas.work_status_types import WorkStatusType
 work_status_types_bp = Blueprint("work_status_types", __name__)
 
 
-@work_status_types_bp.get("/work_status_types")
+@work_status_types_bp.get("/work-status-types")
 def list_work_status_types():
     db = get_db()
     with db.cursor() as cur:

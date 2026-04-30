@@ -1,4 +1,4 @@
-from flask import Flask,jsonify
+from flask import Flask, jsonify
 from werkzeug.exceptions import HTTPException
 from pydantic import ValidationError
 
@@ -18,13 +18,13 @@ class APIError(Exception):
 class NotFoundError(APIError):
     #指定されたリソースが見つからない場合にraiseする例外
     code = "NOT_FOUND"
-    status_code: 404
+    status_code = 404
     message = "resource not found"
 
 class ConflictError(APIError):
     #一意制約や外部キー制約に違反したときにraiseする例外
     code = "CONFLICT"
-    status_code: 409
+    status_code = 409
     message = "conflict"
 
 def register_error_handlers(app: Flask) -> None:

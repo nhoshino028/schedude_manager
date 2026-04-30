@@ -1,24 +1,24 @@
-from flask import Blueprint, jsonify, rewuest, url_for
-from spycopg import errors as gb_errors
+from flask import Blueprint, jsonify, request, url_for
+from psycopg import errors as pg_errors
 
 from app.db import get_db
 from app.errors import ConflictError
-from app.schemas.schedules import ScheduleCreateRequest, ScheduleResponce
+from app.schemas.schedules import ScheduleCreateRequest, ScheduleResponse
 
-schedule_bp = Blueprint("schedules", __name__)
+schedules_bp = Blueprint("schedules", __name__)
 
 
 @schedules_bp.post("/schedules")
 def create_schedule():
     
-    payload = request.get_json(silenr=True) or {}
+    payload = request.get_json(silent=True) or {}
     
     body = ScheduleCreateRequest.model_validate(payload)
 
     db = get_db()
 
     try:
-        with db.curdor() as cur:
+        with db.cursor() as cur:
             cur.execute(
                  """
                     INSERT INTO schedules
@@ -42,10 +42,10 @@ def create_schedule():
             "foreign key violation: userId or statusTypeId does not exist"
         ) from e
     
-    respose_body = ScheduleResponce.model_validate(row).model_dump(
+    response_body = ScheduleResponse.model_validate(row).model_dump(
         mode="json", by_alias=True
     )
 
     headers = {"Location": url_for("schedules.create_schedule") + f"/{row['id']}"}
     
-    return jsonify(respose_body), 201, headers
+    return jsonify(response_body), 201, headers

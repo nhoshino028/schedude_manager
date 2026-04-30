@@ -1,6 +1,6 @@
 services:
-  image: schedule-frontend
   frontend:
+    image: schedule-frontend
     container_name: schedule_frontend
     build: ./frontend
     ports:

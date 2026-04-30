@@ -6,7 +6,7 @@ from flask import Flask, g, current_app
 def get_db() -> psycopg.Connection:
     if "db" not in g:
         #gオブジェクトにdb属性が入っていないとき、database_urlを読み取って新規接続を作る
-        settings = current_app_config["SETTINGS"]
+        settings = current_app.config["SETTINGS"]
         g.db = psycopg.connect(
             settings.database_url,
             row_factory=dict_row,
