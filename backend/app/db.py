@@ -14,3 +14,15 @@ def get_db() -> psycopg.Connection:
         )
     return g.db  #作成した接続をg.dbに保存してreturnまたはg.dbがある場合はそのまま返すだけ
 
+# 現在のFlaskリクエストに基づくpsycopg接続を閉じる
+def close_db(exc: BaseException | None = None) -> None:
+    # 接続を取り出す（なければNoneを返す）
+    db = g.pop("db", None)
+    # 接続が存在すればclose()を呼ぶ
+    if db is not None:
+        db.close()
+
+#Flaskアプリケーションにclose_dbを登録する　teardown_appcontextとして呼び出せるようにする
+#この登録をするとリクエスト終了時にclose_dbが自動的に呼ばれて確実に接続が閉じる
+def init_app(app: Flask) -> None:
+    app.teardown_appcontext(close_db)

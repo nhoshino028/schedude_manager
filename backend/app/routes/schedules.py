@@ -1,0 +1,51 @@
+from flask import Blueprint, jsonify, rewuest, url_for
+from spycopg import errors as gb_errors
+
+from app.db import get_db
+from app.errors import ConflictError
+from app.schemas.schedules import ScheduleCreateRequest, ScheduleResponce
+
+schedule_bp = Blueprint("schedules", __name__)
+
+
+@schedules_bp.post("/schedules")
+def create_schedule():
+    
+    payload = request.get_json(silenr=True) or {}
+    
+    body = ScheduleCreateRequest.model_validate(payload)
+
+    db = get_db()
+
+    try:
+        with db.curdor() as cur:
+            cur.execute(
+                 """
+                    INSERT INTO schedules
+                        (user_id, target_date, status_type_id, start_time, end_time, comment,
+                         created_at, updated_at)
+                    VALUES
+                        (%(user_id)s, %(target_date)s, %(status_type_id)s,
+                         %(start_time)s, %(end_time)s, %(comment)s,
+                         now(), now())
+                    RETURNING id, user_id, target_date, status_type_id,
+                              start_time, end_time, comment, created_at, updated_at
+                """,
+                body.model_dump(),
+            )
+            row = cur.fetchone()
+        db.commit()
+
+    except pg_errors.ForeignKeyViolation as e:
+        db.rollback()
+        raise ConflictError(
+            "foreign key violation: userId or statusTypeId does not exist"
+        ) from e
+    
+    respose_body = ScheduleResponce.model_validate(row).model_dump(
+        mode="json", by_alias=True
+    )
+
+    headers = {"Location": url_for("schedules.create_schedule") + f"/{row['id']}"}
+    
+    return jsonify(respose_body), 201, headers
