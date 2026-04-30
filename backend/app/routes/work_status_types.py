@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify
 from app.db import get_db
 from app.schemas.work_status_types import WorkStatusType
 
+
 work_status_types_bp = Blueprint("work_status_types", __name__)
 
 
