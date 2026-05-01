@@ -12,7 +12,7 @@ def list_users():
     db = get_db()
     with db.cursor() as cur:
         cur.execute(
-            "SELECT team, employeeCode, name, team, createdAt ORDER BY id"  #idのところ読み込めてない column "id" does not exist
+            "SELECT u.id, u.employee_code, u.name, json_build_object('id', t.id,'teamCode', t.team_code,'name', t.name) AS team, u.created_at FROM users u LEFT JOIN teams t ON u.team_id = t.id ORDER BY u.id ASC;"
         )
         rows = cur.fetchall()
 

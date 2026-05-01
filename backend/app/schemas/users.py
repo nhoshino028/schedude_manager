@@ -8,5 +8,5 @@ class User(BaseModel):
     id: int
     employee_code: str = Field(alias="employeeCode")
     name: str
-    team: Team
+    team: Team  #{"id": 1, "teamCode": "TEAM_A", "name": "第1チーム"}
     created_at: datetime = Field(alias="createdAt")

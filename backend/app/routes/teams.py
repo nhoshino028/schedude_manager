@@ -12,7 +12,7 @@ def list_teams():
     db = get_db()
     with db.cursor() as cur:
         cur.execute(
-            "SELECT id, team_code, name, created_at, updated_at ORDER BY id"  #idのところ読み込めてない column "id" does not exist
+            "SELECT id, team_code, name, created_at, updated_at FROM teams ORDER BY id;"
         )
         rows = cur.fetchall()
 
