@@ -1,7 +1,7 @@
 from datetime import date, datetime, time
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
-
+from app.schemas.teams import Team
 
 class ScheduleCreateRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True)

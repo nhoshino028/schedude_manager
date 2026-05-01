@@ -3,9 +3,11 @@ from psycopg import errors as pg_errors
 
 from app.db import get_db
 from app.errors import ConflictError
+from app.errors import NotFoundError
 from app.schemas.schedules import ScheduleCreateRequest, ScheduleResponse
 
 schedules_bp = Blueprint("schedules", __name__)
+del_schedules_bp = Blueprint("schedules", __name__)
 
 
 @schedules_bp.post("/schedules")
@@ -49,3 +51,28 @@ def create_schedule():
     headers = {"Location": url_for("schedules.create_schedule") + f"/{row['id']}"}
     
     return jsonify(response_body), 201, headers
+
+
+@del_schedules_bp.post("/schedules/{id}")
+def delete_schedule():
+    db = get_db()
+    try:
+        with db.cursor() as cur:
+            cur.execute(
+                "DELETE FROM schedules WHERE id = %{id}s RETURNING id"
+            )
+            row = cur.fetchone()
+        db.commit()
+         
+    
+    except pg_errors.NotFoundError as e:
+        db.rollback()
+        raise NotFoundError(
+            "not found: userId is not found"
+        )from e
+
+
+    return ("", 204)
+
+    
+    
