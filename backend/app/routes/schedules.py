@@ -106,11 +106,11 @@ def delete_schedule(id):
     try:
         with db.cursor() as cur:
             cur.execute(
-                "DELETE FROM schedules WHERE id = %(id)s RETURNING id"
-            ),
+                "DELETE FROM schedules WHERE id = %(id)s RETURNING id",
             {
                 "id": id,
             }
+            )
             row = cur.fetchone()
 
             if row is None:
