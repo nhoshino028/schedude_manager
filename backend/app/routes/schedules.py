@@ -4,9 +4,48 @@ from psycopg import errors as pg_errors
 from app.db import get_db
 from app.errors import ConflictError
 from app.errors import NotFoundError
-from app.schemas.schedules import ScheduleCreateRequest, ScheduleUpdateRequest, ScheduleResponse
+from app.schemas.schedules import Schedule, ScheduleCreateRequest, ScheduleUpdateRequest, ScheduleResponse
 
 schedules_bp = Blueprint("schedules", __name__)
+
+# 取得
+@schedules_bp.get("/schedules")
+def list_schedule():
+
+    #クエリパラメータの取得
+    date = request.args.get("date")
+    user_id = request.args.get("userId")
+    start_time = request.args.get("from")
+    end_time = request.args.get("to")
+
+
+    db = get_db()
+    with db.cursor() as cur:
+        cur.execute(
+            """
+                SELECT
+                    id, 
+                    user_id, 
+                    target_date, 
+                    status_type_id, 
+                    start_time,  
+                    end_time, 
+                    comment, 
+                    created_at, 
+                    updated_at
+                    FROM schedules 
+                    ORDER BY id;
+            """
+        )
+        rows = cur.fetchall()
+
+    items = [
+        Schedule.model_validate(row).model_dump(mode="json", by_alias=True)
+        for row in rows
+    ]
+
+    return jsonify(items), 200
+
 
 # 登録
 @schedules_bp.post("/schedules")

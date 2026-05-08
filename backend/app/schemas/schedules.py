@@ -1,7 +1,28 @@
 from datetime import date, datetime, time
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
-from app.schemas.teams import Team
+from app.schemas.users import User
+from app.schemas.work_status_types import WorkStatusType
+
+
+class SimpleUser(BaseModel):
+    id: int
+    name: str
+
+
+class Schedule(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+    id: int
+    user: SimpleUser #{"id": 10, "name": "山田 太郎"}
+    target_date: date = Field(alias="targetDate")
+    status_type: WorkStatusType #{"id": 1, "statusCode": "OFFICE", "statusName": "出社"}
+    start_time: time | None = Field(default=None, alias="startTime")
+    end_time: time | None = Field(default=None, alias="endTime")
+    comment: str | None = None
+    created_at: datetime = Field(alias="createdAt")
+    updated_at: datetime = Field(alias="updatedAt")
+
 
 class ScheduleCreateRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
