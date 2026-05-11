@@ -27,6 +27,9 @@ class ConflictError(APIError):
     status_code = 409
     message = "conflict"
 
+class QueryValidationError(Exception):
+    pass
+
 def register_error_handlers(app: Flask) -> None:
 
     @app.errorhandler(ValidationError)
@@ -45,6 +48,13 @@ def register_error_handlers(app: Flask) -> None:
             "details": details,
         }), 400
     
+    @app.errorhandler(QueryValidationError)
+    def _on_query_validation_error(e:QueryValidationError):
+        return jsonify({
+            "code": "VALIDATION_ERROR",
+            "message": str(e),
+        }),400
+
     @app.errorhandler(APIError)
     def _on_api_error(e: APIError):
     # NotFoundError/ConflictErrorなどのサブクラスもこのハンドラで捕捉する

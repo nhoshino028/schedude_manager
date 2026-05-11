@@ -3,7 +3,7 @@ from psycopg import errors as pg_errors
 
 from app.db import get_db
 from app.errors import ConflictError
-from app.errors import NotFoundError
+from app.errors import NotFoundError, ValidationError, QueryValidationError
 from app.schemas.schedules import Schedule, ScheduleCreateRequest, ScheduleUpdateRequest, ScheduleResponse
 
 schedules_bp = Blueprint("schedules", __name__)
@@ -13,16 +13,52 @@ schedules_bp = Blueprint("schedules", __name__)
 def list_schedule():
 
     #クエリパラメータの取得
-    date = request.args.get("date")
+    target_date = request.args.get("date")
     user_id = request.args.get("userId")
     start_time = request.args.get("from")
     end_time = request.args.get("to")
 
+    #条件分岐
+    if target_date and (start_time or end_time):
+        raise QueryValidationError(
+            "date cannot be used with from/to"
+        )
+
+    if (start_time and not end_time) or (end_time and not start_time):
+        raise QueryValidationError(
+            "from and to must both be specified"
+        )
+
+    #where句の動的組み立て
+    conditions = []
+    params = {}
+
+    if target_date:
+        conditions.append("target_date = %(target_date)s")
+        params["target_date"] = target_date
+
+    if user_id:
+        conditions.append("user_id = %(user_id)s")
+        params["user_id"] = user_id
+
+    if start_time:
+        conditions.append("start_time >= %(start_time)s")
+        params["start_time"] = start_time
+
+    if end_time:
+        conditions.append("end_time <= %(end_time)s")
+        params["end_time"] = end_time
+
+    where_clause = ""
+
+    if conditions:
+        where_clause = " WHERE " + " AND ".join(conditions)
+    
 
     db = get_db()
     with db.cursor() as cur:
         cur.execute(
-            """
+            f"""
                 SELECT
                     id, 
                     user_id, 
@@ -34,13 +70,15 @@ def list_schedule():
                     created_at, 
                     updated_at
                     FROM schedules 
+                    {where_clause}
                     ORDER BY id;
-            """
+            """,
+            params,
         )
         rows = cur.fetchall()
 
     items = [
-        Schedule.model_validate(row).model_dump(mode="json", by_alias=True)
+        ScheduleResponse.model_validate(row).model_dump(mode="json", by_alias=True)
         for row in rows
     ]
 
