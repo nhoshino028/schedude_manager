@@ -60,25 +60,29 @@ def list_schedule():
         cur.execute(
             f"""
                 SELECT
-                    id, 
-                    user_id, 
-                    target_date, 
-                    status_type_id, 
-                    start_time,  
-                    end_time, 
-                    comment, 
-                    created_at, 
-                    updated_at
-                    FROM schedules 
+                    s.id, 
+                    json_build_object('id', u.id, 'name', u.name) AS user, 
+                    s.target_date, 
+                    json_build_object('id', w.id, 'statusCode', w.status_code, 'statusName', w.status_name) AS status_type,
+                    s.start_time,  
+                    s.end_time, 
+                    s.comment, 
+                    s.created_at, 
+                    s.updated_at
+                FROM schedules s
+                JOIN users u
+                    on s.user_id = u.id
+                JOIN work_status_types w
+                    on s.status_type_id = w.id
                     {where_clause}
-                    ORDER BY id;
+                    ORDER BY s.id;      
             """,
             params,
         )
         rows = cur.fetchall()
 
     items = [
-        ScheduleResponse.model_validate(row).model_dump(mode="json", by_alias=True)
+        Schedule.model_validate(row).model_dump(mode="json", by_alias=True)
         for row in rows
     ]
 

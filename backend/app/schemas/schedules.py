@@ -9,6 +9,10 @@ class SimpleUser(BaseModel):
     id: int
     name: str
 
+class SimpleStatus(BaseModel):
+    id: int
+    statusCode: str
+    statusName: str
 
 class Schedule(BaseModel):
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
@@ -16,7 +20,7 @@ class Schedule(BaseModel):
     id: int
     user: SimpleUser #{"id": 10, "name": "山田 太郎"}
     target_date: date = Field(alias="targetDate")
-    status_type: WorkStatusType #{"id": 1, "statusCode": "OFFICE", "statusName": "出社"}
+    status_type: SimpleStatus #{"id": 1, "statusCode": "OFFICE", "statusName": "出社"}
     start_time: time | None = Field(default=None, alias="startTime")
     end_time: time | None = Field(default=None, alias="endTime")
     comment: str | None = None
