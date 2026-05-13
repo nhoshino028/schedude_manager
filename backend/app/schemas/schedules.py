@@ -1,8 +1,9 @@
 from datetime import date, datetime, time
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator ,field_validator
 from app.schemas.users import User
 from app.schemas.work_status_types import WorkStatusType
+from app.errors import NotFoundError, ValidationError, QueryValidationError
 
 
 class SimpleUser(BaseModel):
@@ -28,11 +29,43 @@ class Schedule(BaseModel):
     updated_at: datetime = Field(alias="updatedAt")
 
 
+#エラーチェック用のモデル
+class ScheduleQuery(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+    target_date: date | None = Field(default=None, validation_alias="date")
+    user_id: int | None = Field(default=None, alias="userId") 
+    start_time: time | None = Field(default=None, validation_alias="startTime")
+    end_time: time |None = Field(default=None, validation_alias="endTime")
+
+    #未入力時に空文字を送らないようにする
+    @field_validator("user_id", "target_date", "start_time", "end_time", mode="before")
+    @classmethod
+    def empty_string_to_none(cls, v):
+        if v == "":
+            return None
+        return v
+
+    #エラーチェック
+    @model_validator(mode="after")
+    def _validate_query(self):
+            if self.target_date is not None and (self.start_time is not None or self.end_time is not None):
+                raise QueryValidationError(
+                "date cannot be used with from/to"
+            )
+            
+   
+            if (self.start_time is not None and self.end_time is None) or (self.end_time is not None and self.start_time is None):
+                raise QueryValidationError(
+                "from and to must both be specified"
+            )
+            return self
+
 class ScheduleCreateRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     user_id: int = Field(alias="userId")
-    target_date: date = Field(alias="targetDate")
+    target_date: date = Field(validation_alias="targetDate")
     status_type_id: int = Field(alias="statusTypeId")
     start_time: time | None = Field(default=None, alias="startTime")
     end_time: time | None = Field(default=None, alias="endTime")

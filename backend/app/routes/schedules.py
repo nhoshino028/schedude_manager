@@ -4,83 +4,84 @@ from psycopg import errors as pg_errors
 from app.db import get_db
 from app.errors import ConflictError
 from app.errors import NotFoundError, ValidationError, QueryValidationError
-from app.schemas.schedules import Schedule, ScheduleCreateRequest, ScheduleUpdateRequest, ScheduleResponse
+from app.schemas.schedules import Schedule, ScheduleQuery, ScheduleCreateRequest, ScheduleUpdateRequest, ScheduleResponse
 
 schedules_bp = Blueprint("schedules", __name__)
 
 # 取得
 @schedules_bp.get("/schedules")
 def list_schedule():
+    #schemaでモデルを作る
+    query = ScheduleQuery.model_validate(request.args.to_dict())
 
-    #クエリパラメータの取得
-    target_date = request.args.get("date")
-    user_id = request.args.get("userId")
-    start_time = request.args.get("from")
-    end_time = request.args.get("to")
 
-    #条件分岐
-    if target_date and (start_time or end_time):
-        raise QueryValidationError(
-            "date cannot be used with from/to"
-        )
-
-    if (start_time and not end_time) or (end_time and not start_time):
-        raise QueryValidationError(
-            "from and to must both be specified"
-        )
 
     #where句の動的組み立て
     conditions = []
     params = {}
 
-    if target_date:
+    if query.target_date:
         conditions.append("target_date = %(target_date)s")
-        params["target_date"] = target_date
+        params["target_date"] = query.target_date
 
-    if user_id:
+    if query.user_id:
         conditions.append("user_id = %(user_id)s")
-        params["user_id"] = user_id
+        params["user_id"] = query.user_id
 
-    if start_time:
+    if query.start_time:
         conditions.append("start_time >= %(start_time)s")
-        params["start_time"] = start_time
+        params["start_time"] = query.start_time
 
-    if end_time:
+    if query.end_time:
         conditions.append("end_time <= %(end_time)s")
-        params["end_time"] = end_time
+        params["end_time"] = query.end_time
 
     where_clause = ""
 
     if conditions:
         where_clause = " WHERE " + " AND ".join(conditions)
     
+    #型の確認
+    #print(query.start_time)
+    #print(type(query.start_time))
+
+    #print(query.end_time)
+    #print(type(query.end_time))
+
+    #print(params)
+    #print(where_clause)
 
     db = get_db()
-    with db.cursor() as cur:
-        cur.execute(
-            f"""
-                SELECT
-                    s.id, 
-                    json_build_object('id', u.id, 'name', u.name) AS user, 
-                    s.target_date, 
-                    json_build_object('id', w.id, 'statusCode', w.status_code, 'statusName', w.status_name) AS status_type,
-                    s.start_time,  
-                    s.end_time, 
-                    s.comment, 
-                    s.created_at, 
-                    s.updated_at
-                FROM schedules s
-                JOIN users u
-                    on s.user_id = u.id
-                JOIN work_status_types w
-                    on s.status_type_id = w.id
-                    {where_clause}
-                    ORDER BY s.id;      
-            """,
-            params,
-        )
-        rows = cur.fetchall()
-
+    try:
+        with db.cursor() as cur:
+            cur.execute(
+                f"""
+                    SELECT
+                        s.id, 
+                        json_build_object('id', u.id, 'name', u.name) AS user, 
+                        s.target_date, 
+                        json_build_object('id', w.id, 'statusCode', w.status_code, 'statusName', w.status_name) AS status_type,
+                        s.start_time,  
+                        s.end_time, 
+                        s.comment, 
+                        s.created_at, 
+                        s.updated_at
+                    FROM schedules s
+                    JOIN users u
+                        on s.user_id = u.id
+                    JOIN work_status_types w
+                        on s.status_type_id = w.id
+                        {where_clause}
+                        ORDER BY s.id;      
+                """,
+                params,
+            )
+            rows = cur.fetchall()
+    
+    except QueryValidationError:
+        db.rollback()
+        raise
+        
     items = [
         Schedule.model_validate(row).model_dump(mode="json", by_alias=True)
         for row in rows
