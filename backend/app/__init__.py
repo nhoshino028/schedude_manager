@@ -9,7 +9,7 @@ from app.routes.work_status_types import work_status_types_bp
 from app.routes.schedules import schedules_bp
 from app.routes.teams import teams_bp
 from app.routes.users import users_bp
-#from app.routes.reports import reports_bp
+from app.routes.reports import reports_bp
 
 def create_app() -> Flask:
     app = Flask(__name__)
@@ -44,6 +44,6 @@ def create_app() -> Flask:
     app.register_blueprint(schedules_bp)
     app.register_blueprint(teams_bp)
     app.register_blueprint(users_bp)
-    #app.register_blueprint(reports_bp)
+    app.register_blueprint(reports_bp)
 
     return app

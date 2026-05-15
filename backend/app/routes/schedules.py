@@ -3,7 +3,7 @@ from psycopg import errors as pg_errors
 
 from app.db import get_db
 from app.errors import ConflictError
-from app.errors import NotFoundError, ValidationError
+from app.errors import NotFoundError
 from app.schemas.schedules import Schedule, ScheduleQuery, ScheduleCreateRequest, ScheduleUpdateRequest, ScheduleResponse
 
 schedules_bp = Blueprint("schedules", __name__)
