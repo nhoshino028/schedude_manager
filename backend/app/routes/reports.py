@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request
 
 from app.db import get_db
-from app.errors import NotFoundError
 from app.schemas.reports import MonthlyReport, YearMonthQuery
 
 reports_bp = Blueprint("reports", __name__)

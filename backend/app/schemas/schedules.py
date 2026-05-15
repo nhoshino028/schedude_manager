@@ -1,9 +1,5 @@
 from datetime import date, datetime, time
-
 from pydantic import BaseModel, ConfigDict, Field, model_validator ,field_validator
-from app.schemas.users import User
-from app.schemas.work_status_types import WorkStatusType
-from app.errors import NotFoundError, ValidationError
 
 
 class SimpleUser(BaseModel):
