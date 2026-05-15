@@ -3,7 +3,7 @@ from psycopg import errors as pg_errors
 
 from app.db import get_db
 from app.errors import ConflictError
-from app.errors import NotFoundError, ValidationError, QueryValidationError
+from app.errors import NotFoundError, ValidationError
 from app.schemas.schedules import Schedule, ScheduleQuery, ScheduleCreateRequest, ScheduleUpdateRequest, ScheduleResponse
 
 schedules_bp = Blueprint("schedules", __name__)
@@ -77,10 +77,9 @@ def list_schedule():
                 params,
             )
             rows = cur.fetchall()
-    
-    except QueryValidationError:
+
+    except ValueError:
         db.rollback()
-        raise
         
     items = [
         Schedule.model_validate(row).model_dump(mode="json", by_alias=True)

@@ -3,7 +3,7 @@ from datetime import date, datetime, time
 from pydantic import BaseModel, ConfigDict, Field, model_validator ,field_validator
 from app.schemas.users import User
 from app.schemas.work_status_types import WorkStatusType
-from app.errors import NotFoundError, ValidationError, QueryValidationError
+from app.errors import NotFoundError, ValidationError
 
 
 class SimpleUser(BaseModel):
@@ -22,8 +22,8 @@ class Schedule(BaseModel):
     user: SimpleUser #{"id": 10, "name": "山田 太郎"}
     target_date: date = Field(alias="targetDate")
     status_type: SimpleStatus #{"id": 1, "statusCode": "OFFICE", "statusName": "出社"}
-    start_time: time | None = Field(default=None, alias="startTime")
-    end_time: time | None = Field(default=None, alias="endTime")
+    start_time: time | None = Field(default=None, alias="from")
+    end_time: time | None = Field(default=None, alias="to")
     comment: str | None = None
     created_at: datetime = Field(alias="createdAt")
     updated_at: datetime = Field(alias="updatedAt")
@@ -35,8 +35,8 @@ class ScheduleQuery(BaseModel):
 
     target_date: date | None = Field(default=None, validation_alias="date")
     user_id: int | None = Field(default=None, alias="userId") 
-    start_time: time | None = Field(default=None, validation_alias="startTime")
-    end_time: time |None = Field(default=None, validation_alias="endTime")
+    start_time: time | None = Field(default=None, validation_alias="from")
+    end_time: time |None = Field(default=None, validation_alias="to")
 
     #未入力時に空文字を送らないようにする
     @field_validator("user_id", "target_date", "start_time", "end_time", mode="before")
@@ -48,18 +48,24 @@ class ScheduleQuery(BaseModel):
 
     #エラーチェック
     @model_validator(mode="after")
-    def _validate_query(self):
+    def _validate_query(self)-> "ScheduleCreateRequest":
             if self.target_date is not None and (self.start_time is not None or self.end_time is not None):
-                raise QueryValidationError(
+                raise ValueError(
                 "date cannot be used with from/to"
             )
             
    
             if (self.start_time is not None and self.end_time is None) or (self.end_time is not None and self.start_time is None):
-                raise QueryValidationError(
+                raise ValueError(
                 "from and to must both be specified"
             )
+            
+
+            if (self.start_time is not None) and (self.end_time is not None):
+                if (self.start_time) > (self.end_time):
+                    raise ValueError("startTime must be <= endTime")
             return self
+            
 
 class ScheduleCreateRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
