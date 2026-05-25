@@ -18,5 +18,15 @@
 	// バックエンドはDBに依存するので、postgresも起動
     "runServices": [
 		"postgres"
-	]
+	],
+
+	// 拡張機能の導入
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.debugpy",
+				"ms-python.python"
+			]
+		}
+	}
 }

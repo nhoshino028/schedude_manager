@@ -25,9 +25,6 @@
 - コンテナ
   - Docker Desktop / Docker Engine + Compose v2など、docker composeコマンドが使える環境
 
-- データベース
-  - PostgreSQL 16 (postgres:16-alpine)
-
 ・必要なVS code拡張機能
 
 - Dev Container
@@ -99,30 +96,40 @@
 ・dev container での開発環境の開き方
 ・VS Code上でのデバッグの仕方（ブレークポイントで止める）の手順
 
+- 注意点
+  通常起動、個別での開発コンテナ立ち上げ時には、8000番ポートでアプリが起動します。
+  Python Debuggerによるデバッグ実行では、ポート番号重複を避けるためにPython Debuggerデフォルト設定の5000番ポートを使用します。
+
 - 開発環境の開き方
   - 前提条件
     - DevContainerが拡張機能からインストールされていること
-    
   - 開発方法
     1.backendフォルダをVSCodeで開く
-    
-  - 2-1.初回、または変更点があった場合の開き方
-  　`ctrl + Shift + P`でコマンドパレットを開き、`Dev Containers: Rebuild and Reopen in Container`を選択
-    　backendフォルダがDevContainerで開かれる
-    VScode画面左下に「開発コンテナー:backend」と表示されていれば、起動が完了しています。
 
-  - 2-2.初回以降の開発コンテナの開き方
+    2.「.devcontainer」フォルダを作成
+    　フォルダ内にdevcontainer.jsonを作成し、開発環境の設定を追加する
+
+    3-1.初回、または変更点があった場合の開き方
+    　`ctrl + Shift + P`でコマンドパレットを開き、`Dev Containers: Rebuild and Reopen in Container`を選択
+    　backendフォルダがDevContainerで開かれる
+    VScode画面左下に「開発コンテナー:backend_dev」と表示されていれば、起動が完了しています。
+
+    3-2.初回以降の開発コンテナの開き方
     `ctrl + Shift + P`でコマンドパレットを開き、`Dev Containers: Reopen in Container`を選択
     　backendフォルダがDevContainerで開かれる
-    VScode画面左下に「開発コンテナー:backend」と表示されていれば、起動が完了しています。
+    VScode画面左下に「開発コンテナー:backend_dev」と表示されていれば、起動が完了しています。
+
+    4.ブラウザで、http://localhost:8000/を開きます。
+    ページが表示されていれば、問題なく開発コンテナの起動が完了しています。
 
 - デバッグ方法
   　- 前提条件
   　- Python Debuggerが拡張機能からインストールされていること
+  　　(launch.json内で開発コンテナの起動時にインストールするよう設定済みです。)
 
-　 - デバッグ開始
-　　1.backendをDevcontainerで開いた状態で、`F5`を押下すると、flaskアプリが実行されます。
-　　　　 　
+　 - デバッグ
+　　1.backendを開発コンテナで起動をした状態で`F5`を押下すると、flaskアプリが実行されます。
+
 　　2.ブラウザで、http://localhost:5000/を開きます。
 　　　ページが表示されていれば、問題なくデバッグ実行ができています。
 
