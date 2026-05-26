@@ -1,0 +1,32 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
+{
+	// Devcontainers(拡張機能)が左下に表示する識別名
+	"name": "backend_dev",
+
+	// devcontainer.jsonからみたでの位置docker-compose.ymlの参照パス
+    "dockerComposeFile": "../../docker-compose.yml",
+
+	// Devcontainerが接続するサービス名　backendという名前で表示される
+	"service": "backend",
+
+	// コンテナ内のどこを作業ディレクトリとして開くかを指定
+	// Docker containerの WORKDIRとcomposeのバインドマウント先（/app）に合わせること
+	"workspaceFolder": "/app",
+
+	// 同時に起動するサービスを指定
+	// バックエンドはDBに依存するので、postgresも起動
+    "runServices": [
+		"postgres"
+	],
+
+	// 拡張機能の導入
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.debugpy",
+				"ms-python.python"
+			]
+		}
+	}
+}
